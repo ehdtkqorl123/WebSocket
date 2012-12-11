@@ -1,0 +1,6 @@
+{
+  "app": {
+    "title": "socket.io bookmarklet",
+    "port": 3001
+  }
+}

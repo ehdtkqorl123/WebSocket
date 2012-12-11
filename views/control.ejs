@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Websocket Navigation Controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="paulshin <thegreatman@gmail.com>">
+    <link media="screen" rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Play" />
+    <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+    <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/stylesheets/docs.css" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico?20121120" type="image/x-icon">
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <ul class="nav">
+          <li class="active">
+            <a href="#">Websocket Navigation Controller</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="container">
+      <h1>Your Controller</h1> 
+
+      <div class="top-container">
+          <a href="#" class="btn btn-success btn-large" data-action="up">
+              <i class="icon-backward icon-white"></i>
+              <span><strong>UP</strong></span>       
+          </a>  
+      </div>
+      <div class="clearfix">
+        <div class="pull-left">
+            <a href="#" class="btn btn-danger btn-large" data-action="left">
+                <i class="icon-backward icon-white"></i>
+                <span><strong>LEFT</strong></span>       
+            </a>  
+        </div>
+        <div class="pull-right">
+            <a href="#" class="btn btn-primary btn-large" data-action="right">
+              <span><strong>RIGHT</strong></span>
+              <i class="icon-forward icon-white"></i>
+            </a>
+        </div>
+      </div>
+      <div class="bottom-container"">
+          <a href="#" class="btn btn-success btn-large" data-action="down">
+              <i class="icon-backward icon-white"></i>
+              <span><strong>DOWN</strong></span>       
+          </a>  
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p>Developed with Node.js by <a href="http://www.paulshin.ca">Paul Shin</a> and Nanha Park</p>
+      </div>
+    </footer>
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/socket.io.js"></script>
+    <script>
+      var sessid = "<%=sessid%>";
+
+      var h = 'http://socket.nodeman.org';
+      var s = io.connect(h);
+      
+      s.send(sessid + ':close');
+
+      $(document.body).click(function(e) {
+        var o = $(e.target);
+        var action = o[0].tagName.toUpperCase() == 'A' ? o.data('action') : o.parents('a').data('action');
+    
+        s.send(sessid + ':' + action);
+      });
+
+      var status;
+      window.ondevicemotion = function(event) {
+        var ax = event.accelerationIncludingGravity.x * 2;
+        var ay = event.accelerationIncludingGravity.y * 2;
+
+        if (ax > 14 && status != 2){ //move right on device
+           status = 2;
+           s.send(sessid + ':right');
+        }
+        if (ax < -14 && status != 1){ //move left on device
+           status = 1;
+           s.send(sessid + ':left');
+        }
+        if (ax > -14 && ax < 14 && status != 3){ //device held steady
+           status = 3;
+        } 
+      };
+    </script>
+  </body>
+</html>
